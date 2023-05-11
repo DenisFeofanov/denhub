@@ -121,10 +121,8 @@ const App = () => {
   ]);
 
   return (
-    <div className="container-fluid movie-app">
-      <div className="row flex-nowrap overflow-auto">
-        <MovieList movies={movies} />
-      </div>
+    <div className="my-row">
+      <MovieList movies={movies} />
     </div>
   );
 };
