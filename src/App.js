@@ -121,7 +121,7 @@ const App = () => {
   ]);
 
   return (
-    <div className="my-row">
+      <div className="cards">
       <MovieList movies={movies} />
     </div>
   );
