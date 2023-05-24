@@ -25,7 +25,7 @@ const App = () => {
   }, [searchValue]);
 
   return (
-    <div>
+    <div className="container">
       <div className="row">
         <MovieListHeading heading="Movies" />
         <SearchBox searchValue={searchValue} setSearchValue={setSearchValue} />

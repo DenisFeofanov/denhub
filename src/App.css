@@ -2,15 +2,22 @@
   box-sizing: border-box;
 }
 
+.container {
+  padding-left: 3vw;
+}
+
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 3vw;
 }
 
 .heading {
   font-size: 3rem;
+}
+
+.input {
+  margin-right: 3vw;
 }
 
 .cards {
@@ -20,5 +27,11 @@
 }
 
 .card-image {
-  max-height: 300px;
+  max-height: 230px;
+}
+
+@media screen and (min-width: 768px) {
+  .card-image {
+    max-height: 300px;
+  }
 }
