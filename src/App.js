@@ -28,11 +28,24 @@ const App = () => {
     getMovieRequest(searchValue);
   }, [searchValue]);
 
+  useEffect(() => {
+    const movieFavourites = JSON.parse(
+      localStorage.getItem("DenHub-favourites")
+    );
+
+    setFavourites(movieFavourites);
+  }, []);
+
+  const saveToLocalStorage = items => {
+    localStorage.setItem("DenHub-favourites", JSON.stringify(items));
+  };
+
   const addFavouriteMovie = movie => {
     if (favourites.includes(movie)) return;
 
     const newFavouriteList = [...favourites, movie];
     setFavourites(newFavouriteList);
+    saveToLocalStorage(newFavouriteList);
   };
 
   const removeFromFavourites = movie => {
@@ -41,6 +54,7 @@ const App = () => {
     );
 
     setFavourites(newFavouriteList);
+    saveToLocalStorage(newFavouriteList);
   };
 
   return (
@@ -62,8 +76,8 @@ const App = () => {
         ))}
       </div>
 
+      <MovieListHeading heading="Favourites" />
       <div className="my-cards">
-        <MovieListHeading heading="Favourites" />
         {favourites.map(movie => (
           <Card
             movie={movie}
