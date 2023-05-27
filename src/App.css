@@ -2,25 +2,30 @@
   box-sizing: border-box;
 }
 
-.container {
+html {
+  font-style: 62.5%;
+}
+
+
+.my-container {
   padding-left: 3vw;
 }
 
-.row {
+.my-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.heading {
+.my-heading {
   font-size: 3rem;
 }
 
-.input {
+.my-input {
   margin-right: 3vw;
 }
 
-.cards {
+.my-cards {
   display: flex;
   overflow-x: auto;
   gap: 20px;
@@ -28,21 +33,21 @@
   align-items: center;
 }
 
-.card {
+.my-card {
   position: relative;
   transition: transform 0.2s;
 }
 
-.card:hover {
-	cursor: pointer;
-	transform: scale(1.1);
+.my-card:hover {
+  cursor: pointer;
+  transform: scale(1.1);
 }
 
-.card:hover .overlay {
+.my-card:hover .my-overlay {
   opacity: 1;
 }
 
-.overlay {
+.my-overlay {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -54,15 +59,15 @@
 
   text-align: center;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 
-.card-image {
+.my-card-image {
   max-height: 230px;
 }
 
 @media screen and (min-width: 768px) {
-  .card-image {
+  .my-card-image {
     max-height: 300px;
   }
 }

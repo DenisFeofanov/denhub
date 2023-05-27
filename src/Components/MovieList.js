@@ -3,9 +3,9 @@ const MovieList = props => {
   return (
     <>
       {props.movies.map((movie, index) => (
-        <div className="card">
-          <img className="card-image" src={movie.Poster} alt="movie"></img>
-          <div className="overlay"></div>
+        <div className="my-card">
+          <img className="my-card-image" src={movie.Poster} alt="movie"></img>
+          <div className="my-overlay">
             <FavouriteComponent />
           </div>
         </div>
