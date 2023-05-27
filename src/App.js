@@ -4,6 +4,7 @@ import "./App.css";
 import MovieList from "./Components/MovieList";
 import MovieListHeading from "./Components/MovieListHeading";
 import SearchBox from "./Components/SearchBox";
+import AddFavourite from "./Components/AddFavourites";
 
 const App = () => {
   const [movies, setMovies] = useState([]);
@@ -31,7 +32,7 @@ const App = () => {
         <SearchBox searchValue={searchValue} setSearchValue={setSearchValue} />
       </div>
       <div className="cards">
-        <MovieList movies={movies} />
+        <MovieList movies={movies} favouriteComponent={AddFavourite} />
       </div>
     </div>
   );

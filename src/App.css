@@ -44,14 +44,17 @@
 
 .overlay {
   position: absolute;
-  background: rgba(0, 0, 0, 0.8);
+  bottom: 0;
   width: 100%;
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.8);
   transition: 0.5s ease;
   opacity: 0;
-  bottom: 0;
-  font-size: 20px;
-  padding: 20px;
+
   text-align: center;
+  color: white;
+  font-size: 1.5rem;
 }
 
 .card-image {
