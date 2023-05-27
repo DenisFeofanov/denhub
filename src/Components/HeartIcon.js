@@ -1,7 +1,6 @@
-const AddFavourite = () => {
+const HeartIcon = () => {
   return (
     <>
-      <span className="me-2">Add to Favourites</span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -19,4 +18,4 @@ const AddFavourite = () => {
   );
 };
 
-export default AddFavourite;
+export default HeartIcon;
