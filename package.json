@@ -1,5 +1,6 @@
 {
-  "name": "react-movie-app",
+  "name": "denhub",
+  "description": "Collection of my favourite movies, games and books all fetched from APIs. Made as a way to learn how to use API.",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
