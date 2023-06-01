@@ -8,6 +8,7 @@ html {
 
 .my-container {
   padding-left: 3vw;
+  padding-bottom: 3vw;
 }
 
 .my-row {
@@ -69,4 +70,26 @@ html {
   .my-card-image {
     max-height: 300px;
   }
+}
+
+.my-removed-card {
+  position: relative;
+  border-style: dotted;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-removed-card-text {
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.my-removed-card-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0.35rem;
+  cursor: pointer;
 }

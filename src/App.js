@@ -7,6 +7,7 @@ import MovieListHeading from "./Components/MovieListHeading";
 import SearchBox from "./Components/SearchBox";
 import Card from "./Components/Card";
 import XIcon from "./Components/XIcon";
+import RemovedCard from "./Components/RemovedCard";
 
 const App = () => {
   const [movies, setMovies] = useState([]);
@@ -87,6 +88,8 @@ const App = () => {
           />
         ))}
       </div>
+
+      <RemovedCard width={202.25} height={300} />
     </div>
   );
 };
