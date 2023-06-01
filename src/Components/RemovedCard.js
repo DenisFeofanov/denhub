@@ -1,6 +1,12 @@
 import XIcon from "./XIcon";
 
-const RemovedCard = ({ width, height }) => {
+const RemovedCard = ({
+  width,
+  height,
+  movie,
+  handleUndoClick,
+  handleCloseClick,
+}) => {
   return (
     <div
       className="my-removed-card"
@@ -9,8 +15,18 @@ const RemovedCard = ({ width, height }) => {
         height: height,
       }}
     >
-      <XIcon customClassName="my-removed-card-close" width={32} height={32} />
-      <p className="my-removed-card-text">Undo</p>
+      <XIcon
+        className="my-removed-card-close"
+        width={32}
+        height={32}
+        onClick={() => handleCloseClick(movie)}
+      />
+      <button
+        className="my-removed-card-text"
+        onClick={() => handleUndoClick(movie)}
+      >
+        Undo
+      </button>
     </div>
   );
 };

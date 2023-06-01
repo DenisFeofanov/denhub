@@ -49,6 +49,22 @@ const App = () => {
     saveToLocalStorage(newFavouriteList);
   };
 
+  const toggleFavouriteRemove = (movie, isRemoved) => {
+    const newFavouriteList = favourites.map(favourite => {
+      if (movie.imdbID === favourite.imdbID) {
+        return { ...favourite, isRemoved };
+      }
+      return favourite;
+    });
+
+    setFavourites(newFavouriteList);
+    saveToLocalStorage(newFavouriteList);
+  };
+
+  const softRemoveFromFavourites = movie => toggleFavouriteRemove(movie, true);
+  const undoSoftRemoveFromFavourites = movie =>
+    toggleFavouriteRemove(movie, false);
+
   const removeFromFavourites = movie => {
     const newFavouriteList = favourites.filter(
       favourite => favourite.imdbID !== movie.imdbID
@@ -79,17 +95,25 @@ const App = () => {
 
       <MovieListHeading heading="Favourites" />
       <div className="my-cards">
-        {favourites.map(movie => (
-          <Card
-            movie={movie}
-            handleOverlayClick={removeFromFavourites}
-            overlayText="Remove from favourites"
-            overlayIcon={XIcon}
-          />
-        ))}
+        {favourites.map(movie =>
+          movie.isRemoved ? (
+            <RemovedCard
+              width={202.25}
+              height={300}
+              movie={movie}
+              handleUndoClick={undoSoftRemoveFromFavourites}
+              handleCloseClick={removeFromFavourites}
+            />
+          ) : (
+            <Card
+              movie={movie}
+              handleOverlayClick={softRemoveFromFavourites}
+              overlayText="Remove from favourites"
+              overlayIcon={XIcon}
+            />
+          )
+        )}
       </div>
-
-      <RemovedCard width={202.25} height={300} />
     </div>
   );
 };
