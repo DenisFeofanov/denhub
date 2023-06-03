@@ -57,12 +57,20 @@ const App = () => {
       return favourite;
     });
 
+    // keep removed item in state, but not in local storage
     setFavourites(newFavouriteList);
-    saveToLocalStorage(newFavouriteList);
+    if (isSoftRemoved) {
+      saveToLocalStorage(
+        newFavouriteList.filter(fav => fav.imdbID !== movie.imdbID)
+      );
+    } else {
+      saveToLocalStorage(newFavouriteList);
+    }
   };
 
   const softRemoveFromFavourites = movie =>
     toggleFavouriteSoftRemove(movie, true);
+
   const undoSoftRemoveFromFavourites = movie =>
     toggleFavouriteSoftRemove(movie, false);
 
