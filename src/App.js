@@ -49,10 +49,10 @@ const App = () => {
     saveToLocalStorage(newFavouriteList);
   };
 
-  const toggleFavouriteRemove = (movie, isRemoved) => {
+  const toggleFavouriteSoftRemove = (movie, isSoftRemoved) => {
     const newFavouriteList = favourites.map(favourite => {
       if (movie.imdbID === favourite.imdbID) {
-        return { ...favourite, isRemoved };
+        return { ...favourite, isSoftRemoved };
       }
       return favourite;
     });
@@ -61,9 +61,10 @@ const App = () => {
     saveToLocalStorage(newFavouriteList);
   };
 
-  const softRemoveFromFavourites = movie => toggleFavouriteRemove(movie, true);
+  const softRemoveFromFavourites = movie =>
+    toggleFavouriteSoftRemove(movie, true);
   const undoSoftRemoveFromFavourites = movie =>
-    toggleFavouriteRemove(movie, false);
+    toggleFavouriteSoftRemove(movie, false);
 
   const removeFromFavourites = movie => {
     const newFavouriteList = favourites.filter(
@@ -96,7 +97,7 @@ const App = () => {
       <MovieListHeading heading="Favourites" />
       <div className="my-cards">
         {favourites.map(movie =>
-          movie.isRemoved ? (
+          movie.isSoftRemoved ? (
             <RemovedCard
               width={202.25}
               height={300}
