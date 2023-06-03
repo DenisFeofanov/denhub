@@ -42,7 +42,14 @@ const App = () => {
   };
 
   const addFavouriteMovie = movie => {
-    if (favourites.includes(movie)) return;
+    const existingFavourite = favourites.find(
+      fav => fav.imdbID === movie.imdbID
+    );
+
+    if (existingFavourite) {
+      if (existingFavourite.isSoftRemoved) undoSoftRemoveFromFavourites(movie);
+      return;
+    }
 
     const newFavouriteList = [...favourites, movie];
     setFavourites(newFavouriteList);
