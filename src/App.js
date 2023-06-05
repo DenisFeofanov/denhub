@@ -30,9 +30,8 @@ const App = () => {
   }, [searchValue]);
 
   useEffect(() => {
-    const movieFavourites = JSON.parse(
-      localStorage.getItem("DenHub-favourites")
-    );
+    const movieFavourites =
+      JSON.parse(localStorage.getItem("DenHub-favourites")) || [];
 
     setFavourites(movieFavourites);
   }, []);
