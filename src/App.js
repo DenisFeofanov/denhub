@@ -55,38 +55,39 @@ const App = () => {
     saveToLocalStorage(newFavouriteList);
   };
 
-  const toggleFavouriteSoftRemove = (movie, isSoftRemoved) => {
-    const newFavouriteList = favourites.map(favourite => {
-      if (movie.imdbID === favourite.imdbID) {
-        return { ...favourite, isSoftRemoved };
-      }
-      return favourite;
-    });
+  const softRemoveFromFavourites = movie => {
+    // list without removed movie
+    saveToLocalStorage(favourites.filter(fav => fav.imdbID !== movie.imdbID));
 
-    // keep removed item in state, but not in local storage
-    setFavourites(newFavouriteList);
-    if (isSoftRemoved) {
-      saveToLocalStorage(
-        newFavouriteList.filter(fav => fav.imdbID !== movie.imdbID)
-      );
-    } else {
-      saveToLocalStorage(newFavouriteList);
-    }
+    // list with removed movie marked as softRemoved
+    const favouritesWithSoftRemovedCard = favourites.map(fav => {
+      if (fav.imdbID === movie.imdbID) {
+        return { ...fav, isSoftRemoved: true };
+      }
+      return fav;
+    });
+    setFavourites(favouritesWithSoftRemovedCard);
   };
 
-  const softRemoveFromFavourites = movie =>
-    toggleFavouriteSoftRemove(movie, true);
+  const undoSoftRemoveFromFavourites = movie => {
+    const newFavouriteList = favourites.map(fav => {
+      // omit isSoftRemoved property
+      if (fav.imdbID === movie.imdbID) {
+        let { isSoftRemoved, ...newFav } = fav;
+        return newFav;
+      }
+      return fav;
+    });
 
-  const undoSoftRemoveFromFavourites = movie =>
-    toggleFavouriteSoftRemove(movie, false);
+    saveToLocalStorage(newFavouriteList);
+    setFavourites(newFavouriteList);
+  };
 
   const removeFromFavourites = movie => {
     const newFavouriteList = favourites.filter(
-      favourite => favourite.imdbID !== movie.imdbID
+      fav => fav.imdbID !== movie.imdbID
     );
-
     setFavourites(newFavouriteList);
-    saveToLocalStorage(newFavouriteList);
   };
 
   return (
@@ -110,24 +111,25 @@ const App = () => {
 
       <MovieListHeading heading="Favourites" />
       <div className="my-cards">
-        {favourites.map(movie =>
-          movie.isSoftRemoved ? (
-            <RemovedCard
-              width={202.25}
-              height={300}
-              movie={movie}
-              handleUndoClick={undoSoftRemoveFromFavourites}
-              handleCloseClick={removeFromFavourites}
-            />
-          ) : (
-            <Card
-              movie={movie}
-              handleOverlayClick={softRemoveFromFavourites}
-              overlayText="Remove from favourites"
-              overlayIcon={XIcon}
-            />
-          )
-        )}
+        {favourites &&
+          favourites.map(movie =>
+            movie.isSoftRemoved ? (
+              <RemovedCard
+                width={202.25}
+                height={300}
+                movie={movie}
+                handleUndoClick={undoSoftRemoveFromFavourites}
+                handleCloseClick={removeFromFavourites}
+              />
+            ) : (
+              <Card
+                movie={movie}
+                handleOverlayClick={softRemoveFromFavourites}
+                overlayText="Remove from favourites"
+                overlayIcon={XIcon}
+              />
+            )
+          )}
       </div>
     </div>
   );
