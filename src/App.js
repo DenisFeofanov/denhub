@@ -56,17 +56,24 @@ const App = () => {
   };
 
   const softRemoveFromFavourites = movie => {
-    // list without removed movie
-    saveToLocalStorage(favourites.filter(fav => fav.imdbID !== movie.imdbID));
+    // take favourites without softRemove flag from local storage
+    const currFavourites =
+      JSON.parse(localStorage.getItem("DenHub-favourites")) || [];
 
-    // list with removed movie marked as softRemoved
-    const favouritesWithSoftRemovedCard = favourites.map(fav => {
-      if (fav.imdbID === movie.imdbID) {
-        return { ...fav, isSoftRemoved: true };
-      }
-      return fav;
-    });
-    setFavourites(favouritesWithSoftRemovedCard);
+    // create a list with the movie removed
+    saveToLocalStorage(
+      currFavourites.filter(fav => fav.imdbID !== movie.imdbID)
+    );
+
+    // create a list with the removed movie marked as softRemoved
+    setFavourites(
+      currFavourites.map(fav => {
+        if (fav.imdbID === movie.imdbID) {
+          return { ...fav, isSoftRemoved: true };
+        }
+        return fav;
+      })
+    );
   };
 
   const undoSoftRemoveFromFavourites = movie => {
@@ -112,27 +119,26 @@ const App = () => {
 
       <MovieListHeading heading="Favourites" />
       <div className="my-cards">
-        {favourites &&
-          favourites.map(movie =>
-            movie.isSoftRemoved ? (
-              <RemovedCard
-                key={movie.imdbID}
-                width={202.25}
-                height={300}
-                movie={movie}
-                handleUndoClick={undoSoftRemoveFromFavourites}
-                handleCloseClick={removeFromFavourites}
-              />
-            ) : (
-              <Card
-                key={movie.imdbID}
-                movie={movie}
-                handleOverlayClick={softRemoveFromFavourites}
-                overlayText="Remove from favourites"
-                overlayIcon={XIcon}
-              />
-            )
-          )}
+        {favourites.map(movie =>
+          movie.isSoftRemoved ? (
+            <RemovedCard
+              key={movie.imdbID}
+              width={202.25}
+              height={300}
+              movie={movie}
+              handleUndoClick={undoSoftRemoveFromFavourites}
+              handleCloseClick={removeFromFavourites}
+            />
+          ) : (
+            <Card
+              key={movie.imdbID}
+              movie={movie}
+              handleOverlayClick={softRemoveFromFavourites}
+              overlayText="Remove from favourites"
+              overlayIcon={XIcon}
+            />
+          )
+        )}
       </div>
     </div>
   );
