@@ -101,6 +101,7 @@ const App = () => {
       <div className="my-cards">
         {movies.map(movie => (
           <Card
+            key={movie.imdbID}
             movie={movie}
             handleOverlayClick={addFavouriteMovie}
             overlayText="Add to Favourites"
@@ -115,6 +116,7 @@ const App = () => {
           favourites.map(movie =>
             movie.isSoftRemoved ? (
               <RemovedCard
+                key={movie.imdbID}
                 width={202.25}
                 height={300}
                 movie={movie}
@@ -123,6 +125,7 @@ const App = () => {
               />
             ) : (
               <Card
+                key={movie.imdbID}
                 movie={movie}
                 handleOverlayClick={softRemoveFromFavourites}
                 overlayText="Remove from favourites"
