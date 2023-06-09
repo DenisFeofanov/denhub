@@ -1,5 +1,6 @@
 const Card = props => {
-  const OverlayIcon = props.overlayIcon;
+  const LeftIcon = props.leftIcon;
+  const RightIcon = props.rightIcon;
 
   return (
     <div className="my-card">
@@ -14,12 +15,10 @@ const Card = props => {
         ></img>
       </a>
 
-      <div
-        className="my-overlay"
-        onClick={() => props.handleOverlayClick(props.movie)}
-      >
-        <span className="me-2">{props.overlayText}</span>
-        <OverlayIcon />
+      <div className="my-overlay">
+        <LeftIcon onClick={() => props.onLeftClick(props.movie)} />
+
+        <RightIcon onClick={() => props.onRightClick(props.movie)} />
       </div>
     </div>
   );

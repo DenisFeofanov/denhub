@@ -53,6 +53,9 @@ html {
   width: 100%;
   padding: 20px;
 
+  display: flex;
+  justify-content: space-around;
+
   background: rgba(0, 0, 0, 0.8);
   transition: 0.5s ease;
   opacity: 0;

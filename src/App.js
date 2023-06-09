@@ -8,11 +8,13 @@ import SearchBox from "./Components/SearchBox";
 import Card from "./Components/Card";
 import XIcon from "./Components/XIcon";
 import RemovedCard from "./Components/RemovedCard";
+import WishIcon from "./Components/WishIcon";
 
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [favourites, setFavourites] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
 
   const getMovieRequest = async searchValue => {
     const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=aaa5906c`;
@@ -34,10 +36,18 @@ const App = () => {
       JSON.parse(localStorage.getItem("DenHub-favourites")) || [];
 
     setFavourites(movieFavourites);
+
+    const movieWishlist =
+      JSON.parse(localStorage.getItem("DenHub-wishlist")) || [];
+
+    setWishlist(movieWishlist);
   }, []);
 
-  const saveToLocalStorage = items => {
-    localStorage.setItem("DenHub-favourites", JSON.stringify(items));
+  const saveToLocalStorage = ({ favourites, wishlist }) => {
+    if (favourites)
+      localStorage.setItem("DenHub-favourites", JSON.stringify(favourites));
+    if (wishlist)
+      localStorage.setItem("DenHub-wishlist", JSON.stringify(wishlist));
   };
 
   const addFavouriteMovie = movie => {
@@ -52,7 +62,7 @@ const App = () => {
 
     const newFavouriteList = [...favourites, movie];
     setFavourites(newFavouriteList);
-    saveToLocalStorage(newFavouriteList);
+    saveToLocalStorage({ favourites: newFavouriteList });
   };
 
   const softRemoveFromFavourites = movie => {
@@ -61,9 +71,9 @@ const App = () => {
       JSON.parse(localStorage.getItem("DenHub-favourites")) || [];
 
     // create a list with the movie removed
-    saveToLocalStorage(
-      currFavourites.filter(fav => fav.imdbID !== movie.imdbID)
-    );
+    saveToLocalStorage({
+      favourites: currFavourites.filter(fav => fav.imdbID !== movie.imdbID),
+    });
 
     // create a list with the removed movie marked as softRemoved
     setFavourites(
@@ -86,7 +96,7 @@ const App = () => {
       return fav;
     });
 
-    saveToLocalStorage(newFavouriteList);
+    saveToLocalStorage({ favourites: newFavouriteList });
     setFavourites(newFavouriteList);
   };
 
@@ -95,6 +105,13 @@ const App = () => {
       fav => fav.imdbID !== movie.imdbID
     );
     setFavourites(newFavouriteList);
+  };
+
+  const addToWishlist = movie => {
+    const newWishlist = [...wishlist, movie];
+
+    setWishlist(newWishlist);
+    saveToLocalStorage({ wishlist: newWishlist });
   };
 
   return (
@@ -110,9 +127,10 @@ const App = () => {
           <Card
             key={movie.imdbID}
             movie={movie}
-            handleOverlayClick={addFavouriteMovie}
-            overlayText="Add to Favourites"
-            overlayIcon={HeartIcon}
+            rightIcon={WishIcon}
+            leftIcon={HeartIcon}
+            onLeftClick={addFavouriteMovie}
+            onRightClick={addToWishlist}
           />
         ))}
       </div>
@@ -133,12 +151,27 @@ const App = () => {
             <Card
               key={movie.imdbID}
               movie={movie}
-              handleOverlayClick={softRemoveFromFavourites}
-              overlayText="Remove from favourites"
-              overlayIcon={XIcon}
+              leftIcon={XIcon}
+              rightIcon={WishIcon}
+              onLeftClick={softRemoveFromFavourites}
+              onRightClick={addToWishlist}
             />
           )
         )}
+      </div>
+
+      <MovieListHeading heading="Wishlist" />
+      <div className="my-cards">
+        {wishlist.map(movie => (
+          <Card
+            key={movie.imdbID}
+            movie={movie}
+            leftIcon={XIcon}
+            rightIcon={WishIcon}
+            onLeftClick={() => {}}
+            onRightClick={() => {}}
+          />
+        ))}
       </div>
     </div>
   );
