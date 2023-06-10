@@ -10,6 +10,9 @@ import XIcon from "./Components/XIcon";
 import RemovedCard from "./Components/RemovedCard";
 import WishIcon from "./Components/WishIcon";
 
+const FAVOURITES = "favourites";
+const WISHLIST = "wishlist";
+
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -32,22 +35,17 @@ const App = () => {
   }, [searchValue]);
 
   useEffect(() => {
-    const movieFavourites =
-      JSON.parse(localStorage.getItem("DenHub-favourites")) || [];
+    const movieFavourites = JSON.parse(localStorage.getItem(FAVOURITES)) || [];
 
     setFavourites(movieFavourites);
 
-    const movieWishlist =
-      JSON.parse(localStorage.getItem("DenHub-wishlist")) || [];
+    const movieWishlist = JSON.parse(localStorage.getItem(WISHLIST)) || [];
 
     setWishlist(movieWishlist);
   }, []);
 
-  const saveToLocalStorage = ({ favourites, wishlist }) => {
-    if (favourites)
-      localStorage.setItem("DenHub-favourites", JSON.stringify(favourites));
-    if (wishlist)
-      localStorage.setItem("DenHub-wishlist", JSON.stringify(wishlist));
+  const saveToLocalStorage = (listName, items) => {
+    localStorage.setItem(listName, JSON.stringify(items));
   };
 
   const addFavouriteMovie = movie => {
@@ -59,27 +57,41 @@ const App = () => {
     }
 
     const newFavouriteList = [...favourites, movie];
+
     setFavourites(newFavouriteList);
-    saveToLocalStorage({ favourites: newFavouriteList });
+    saveToLocalStorage(FAVOURITES, newFavouriteList);
   };
 
-  const softRemoveFromFavourites = movie => {
-    // take favourites without softRemove flag from local storage
-    const currFavourites =
-      JSON.parse(localStorage.getItem("DenHub-favourites")) || [];
+  const softRemoveFromList = (item, list) => {
+    let saveToState = null;
 
-    // create a list with the movie removed
-    saveToLocalStorage({
-      favourites: currFavourites.filter(fav => fav.imdbID !== movie.imdbID),
-    });
+    switch (list) {
+      case FAVOURITES:
+        saveToState = setFavourites;
+        break;
+      case WISHLIST:
+        saveToState = setWishlist;
+        break;
+      default:
+        console.log("cannot save to state, unknown name");
+    }
+
+    // take items without softRemove flag from local storage
+    const currList = JSON.parse(localStorage.getItem(list)) || [];
+
+    // create a list with the item removed
+    saveToLocalStorage(
+      list,
+      currList.filter(listItem => listItem.imdbID !== item.imdbID)
+    );
 
     // create a list with the removed movie marked as softRemoved
-    setFavourites(
-      currFavourites.map(fav => {
-        if (fav.imdbID === movie.imdbID) {
-          return { ...fav, isSoftRemoved: true };
+    saveToState(
+      currList.map(listItem => {
+        if (listItem.imdbID === item.imdbID) {
+          return { ...listItem, isSoftRemoved: true };
         }
-        return fav;
+        return listItem;
       })
     );
   };
@@ -94,11 +106,11 @@ const App = () => {
       return fav;
     });
 
-    saveToLocalStorage({ favourites: newFavouriteList });
+    saveToLocalStorage(FAVOURITES, newFavouriteList);
     setFavourites(newFavouriteList);
   };
 
-  const removeFromFavourites = movie => {
+  const completeRemoveFromFavourites = movie => {
     const newFavouriteList = favourites.filter(
       fav => fav.imdbID !== movie.imdbID
     );
@@ -117,7 +129,7 @@ const App = () => {
     const newWishlist = [...wishlist, movie];
 
     setWishlist(newWishlist);
-    saveToLocalStorage({ wishlist: newWishlist });
+    saveToLocalStorage(WISHLIST, newWishlist);
   };
 
   return (
@@ -151,7 +163,7 @@ const App = () => {
               height={300}
               movie={movie}
               handleUndoClick={undoSoftRemoveFromFavourites}
-              handleCloseClick={removeFromFavourites}
+              handleCloseClick={completeRemoveFromFavourites}
             />
           ) : (
             <Card
@@ -159,7 +171,7 @@ const App = () => {
               movie={movie}
               leftIcon={XIcon}
               rightIcon={WishIcon}
-              onLeftClick={softRemoveFromFavourites}
+              onLeftClick={() => softRemoveFromList(movie, FAVOURITES)}
               onRightClick={addToWishlist}
             />
           )
@@ -168,16 +180,27 @@ const App = () => {
 
       <MovieListHeading heading="Wishlist" />
       <div className="my-cards">
-        {wishlist.map(movie => (
-          <Card
-            key={movie.imdbID}
-            movie={movie}
-            leftIcon={XIcon}
-            rightIcon={WishIcon}
-            onLeftClick={() => {}}
-            onRightClick={() => {}}
-          />
-        ))}
+        {wishlist.map(movie =>
+          movie.isSoftRemoved ? (
+            <RemovedCard
+              key={movie.imdbID}
+              width={202.25}
+              height={300}
+              movie={movie}
+              handleUndoClick={() => {}}
+              handleCloseClick={() => {}}
+            />
+          ) : (
+            <Card
+              key={movie.imdbID}
+              movie={movie}
+              leftIcon={XIcon}
+              rightIcon={WishIcon}
+              onLeftClick={() => {}}
+              onRightClick={() => softRemoveFromList(movie, WISHLIST)}
+            />
+          )
+        )}
       </div>
     </div>
   );
