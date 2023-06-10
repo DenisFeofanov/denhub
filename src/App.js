@@ -51,9 +51,7 @@ const App = () => {
   };
 
   const addFavouriteMovie = movie => {
-    const existingFavourite = favourites.find(
-      fav => fav.imdbID === movie.imdbID
-    );
+    const existingFavourite = isAlreadyExist(movie, favourites);
 
     if (existingFavourite) {
       if (existingFavourite.isSoftRemoved) undoSoftRemoveFromFavourites(movie);
@@ -107,7 +105,15 @@ const App = () => {
     setFavourites(newFavouriteList);
   };
 
+  const isAlreadyExist = (item, list) => {
+    return list.find(listItem => listItem.imdbID === item.imdbID);
+  };
+
   const addToWishlist = movie => {
+    if (isAlreadyExist(movie, wishlist)) {
+      return;
+    }
+
     const newWishlist = [...wishlist, movie];
 
     setWishlist(newWishlist);
