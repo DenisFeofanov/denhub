@@ -44,8 +44,8 @@ const App = () => {
     setWishlist(movieWishlist);
   }, []);
 
-  const saveToLocalStorage = (listName, items) => {
-    localStorage.setItem(listName, JSON.stringify(items));
+  const saveToLocalStorage = (cards, list) => {
+    localStorage.setItem(list, JSON.stringify(cards));
   };
 
   const addFavouriteMovie = movie => {
@@ -60,13 +60,13 @@ const App = () => {
     const newFavouriteList = [...favourites, movie];
 
     setFavourites(newFavouriteList);
-    saveToLocalStorage(FAVOURITES, newFavouriteList);
+    saveToLocalStorage(newFavouriteList, FAVOURITES);
   };
 
-  const softRemoveCard = (cardToRemove, list) => {
+  const softRemoveCard = (cardToRemove, targetList) => {
     let saveToState = null;
 
-    switch (list) {
+    switch (targetList) {
       case FAVOURITES:
         saveToState = setFavourites;
         break;
@@ -74,18 +74,18 @@ const App = () => {
         saveToState = setWishlist;
         break;
       default:
-        console.log("cannot save to state, unknown name");
+        console.log("incorrect targetList for softRemoveCard method");
     }
 
-    // take items without softRemove flag from local storage
-    const currentList = JSON.parse(localStorage.getItem(list)) || [];
+    // take card without softRemove flag from local storage
+    const currentList = JSON.parse(localStorage.getItem(targetList)) || [];
 
     // create a list with the card removed
     saveToLocalStorage(
-      list,
       currentList.filter(
         currentCard => currentCard.imdbID !== cardToRemove.imdbID
-      )
+      ),
+      targetList
     );
 
     // create a list with the removed card marked as softRemoved
@@ -99,10 +99,11 @@ const App = () => {
     );
   };
 
-  const undoCardSoftRemove = (cardToUndo, list) => {
+  const undoCardSoftRemove = (cardToUndo, targetList) => {
     let currentList = null,
       setNewState = null;
-    switch (list) {
+
+    switch (targetList) {
       case FAVOURITES:
         currentList = favourites;
         setNewState = setFavourites;
@@ -112,7 +113,7 @@ const App = () => {
         setNewState = setWishlist;
         break;
       default:
-        console.log("incorrect list for undoCardSoftRemove");
+        console.log("incorrect targetList for undoCardSoftRemove method");
     }
 
     const newList = currentList.map(currentCard => {
@@ -124,7 +125,7 @@ const App = () => {
       return currentCard;
     });
 
-    saveToLocalStorage(list, newList);
+    saveToLocalStorage(newList, targetList);
     setNewState(newList);
   };
 
@@ -135,8 +136,8 @@ const App = () => {
     setFavourites(newFavouriteList);
   };
 
-  const isAlreadyExist = (item, list) => {
-    return list.find(listItem => listItem.imdbID === item.imdbID);
+  const isAlreadyExist = (givenCard, list) => {
+    return list.find(currentCard => currentCard.imdbID === givenCard.imdbID);
   };
 
   const addToWishlist = movie => {
