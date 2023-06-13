@@ -163,11 +163,27 @@ const App = () => {
     setNewState(newList);
   };
 
-  const completeRemoveFromFavourites = movie => {
-    const newFavouriteList = favourites.filter(
-      fav => fav.imdbID !== movie.imdbID
+  const completeRemoveCard = (cardToRemove, targetList) => {
+    let currentList = null,
+      setNewState = null;
+
+    switch (targetList) {
+      case FAVOURITES:
+        currentList = favourites;
+        setNewState = setFavourites;
+        break;
+      case WISHLIST:
+        currentList = wishlist;
+        setNewState = setWishlist;
+        break;
+      default:
+        console.log("incorrect targetList for completeRemoveCard method");
+    }
+
+    const newList = currentList.filter(
+      currentCard => currentCard.imdbID !== cardToRemove.imdbID
     );
-    setFavourites(newFavouriteList);
+    setNewState(newList);
   };
 
   return (
@@ -201,7 +217,7 @@ const App = () => {
               height={300}
               movie={movie}
               handleUndoClick={() => undoCardSoftRemove(movie, FAVOURITES)}
-              handleCloseClick={completeRemoveFromFavourites}
+              handleCloseClick={() => completeRemoveCard(movie, FAVOURITES)}
             />
           ) : (
             <Card
@@ -226,7 +242,9 @@ const App = () => {
               height={300}
               movie={movie}
               handleUndoClick={() => undoCardSoftRemove(movie, WISHLIST)}
-              handleCloseClick={() => {}}
+              handleCloseClick={() => {
+                completeRemoveCard(movie, WISHLIST);
+              }}
             />
           ) : (
             <Card
