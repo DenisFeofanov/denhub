@@ -52,7 +52,8 @@ const App = () => {
     const existingFavourite = isAlreadyExist(movie, favourites);
 
     if (existingFavourite) {
-      if (existingFavourite.isSoftRemoved) undoSoftRemoveFromFavourites(movie);
+      if (existingFavourite.isSoftRemoved)
+        undoCardSoftRemove(movie, FAVOURITES);
       return;
     }
 
@@ -62,7 +63,7 @@ const App = () => {
     saveToLocalStorage(FAVOURITES, newFavouriteList);
   };
 
-  const softRemoveFromList = (item, list) => {
+  const softRemoveCard = (cardToRemove, list) => {
     let saveToState = null;
 
     switch (list) {
@@ -77,37 +78,54 @@ const App = () => {
     }
 
     // take items without softRemove flag from local storage
-    const currList = JSON.parse(localStorage.getItem(list)) || [];
+    const currentList = JSON.parse(localStorage.getItem(list)) || [];
 
-    // create a list with the item removed
+    // create a list with the card removed
     saveToLocalStorage(
       list,
-      currList.filter(listItem => listItem.imdbID !== item.imdbID)
+      currentList.filter(
+        currentCard => currentCard.imdbID !== cardToRemove.imdbID
+      )
     );
 
-    // create a list with the removed movie marked as softRemoved
+    // create a list with the removed card marked as softRemoved
     saveToState(
-      currList.map(listItem => {
-        if (listItem.imdbID === item.imdbID) {
-          return { ...listItem, isSoftRemoved: true };
+      currentList.map(currentCard => {
+        if (currentCard.imdbID === cardToRemove.imdbID) {
+          return { ...currentCard, isSoftRemoved: true };
         }
-        return listItem;
+        return currentCard;
       })
     );
   };
 
-  const undoSoftRemoveFromFavourites = movie => {
-    const newFavouriteList = favourites.map(fav => {
-      // omit isSoftRemoved property
-      if (fav.imdbID === movie.imdbID) {
-        let { isSoftRemoved, ...newFav } = fav;
-        return newFav;
+  const undoCardSoftRemove = (cardToUndo, list) => {
+    let currentList = null,
+      setNewState = null;
+    switch (list) {
+      case FAVOURITES:
+        currentList = favourites;
+        setNewState = setFavourites;
+        break;
+      case WISHLIST:
+        currentList = wishlist;
+        setNewState = setWishlist;
+        break;
+      default:
+        console.log("incorrect list for undoCardSoftRemove");
+    }
+
+    const newList = currentList.map(currentCard => {
+      if (currentCard.imdbID === cardToUndo.imdbID) {
+        // omit isSoftRemoved property
+        let { isSoftRemoved, ...newCard } = currentCard;
+        return newCard;
       }
-      return fav;
+      return currentCard;
     });
 
-    saveToLocalStorage(FAVOURITES, newFavouriteList);
-    setFavourites(newFavouriteList);
+    saveToLocalStorage(list, newList);
+    setNewState(newList);
   };
 
   const completeRemoveFromFavourites = movie => {
@@ -162,7 +180,7 @@ const App = () => {
               width={202.25}
               height={300}
               movie={movie}
-              handleUndoClick={undoSoftRemoveFromFavourites}
+              handleUndoClick={() => undoCardSoftRemove(movie, FAVOURITES)}
               handleCloseClick={completeRemoveFromFavourites}
             />
           ) : (
@@ -171,7 +189,7 @@ const App = () => {
               movie={movie}
               leftIcon={XIcon}
               rightIcon={WishIcon}
-              onLeftClick={() => softRemoveFromList(movie, FAVOURITES)}
+              onLeftClick={() => softRemoveCard(movie, FAVOURITES)}
               onRightClick={addToWishlist}
             />
           )
@@ -187,7 +205,7 @@ const App = () => {
               width={202.25}
               height={300}
               movie={movie}
-              handleUndoClick={() => {}}
+              handleUndoClick={() => undoCardSoftRemove(movie, WISHLIST)}
               handleCloseClick={() => {}}
             />
           ) : (
@@ -197,7 +215,7 @@ const App = () => {
               leftIcon={XIcon}
               rightIcon={WishIcon}
               onLeftClick={() => {}}
-              onRightClick={() => softRemoveFromList(movie, WISHLIST)}
+              onRightClick={() => softRemoveCard(movie, WISHLIST)}
             />
           )
         )}
