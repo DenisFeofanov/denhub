@@ -48,19 +48,53 @@ const App = () => {
     localStorage.setItem(list, JSON.stringify(cards));
   };
 
-  const addFavouriteMovie = movie => {
-    const existingFavourite = isAlreadyExist(movie, favourites);
+  const isAlreadyExist = (givenCard, targetList) => {
+    let currentList = null;
 
-    if (existingFavourite) {
-      if (existingFavourite.isSoftRemoved)
-        undoCardSoftRemove(movie, FAVOURITES);
+    switch (targetList) {
+      case FAVOURITES:
+        currentList = favourites;
+        break;
+      case WISHLIST:
+        currentList = wishlist;
+        break;
+      default:
+        console.log("incorrect targetList for isAlreadyExist method");
+    }
+
+    return currentList.find(
+      currentCard => currentCard.imdbID === givenCard.imdbID
+    );
+  };
+
+  const addCard = (cardToAdd, targetList) => {
+    let currentList = null,
+      setNewState = null;
+
+    switch (targetList) {
+      case FAVOURITES:
+        currentList = favourites;
+        setNewState = setFavourites;
+        break;
+      case WISHLIST:
+        currentList = wishlist;
+        setNewState = setWishlist;
+        break;
+      default:
+        console.log("incorrect targetList for addCard method");
+    }
+
+    const existingCard = isAlreadyExist(cardToAdd, targetList);
+
+    if (existingCard) {
+      if (existingCard.isSoftRemoved) undoCardSoftRemove(cardToAdd, targetList);
       return;
     }
 
-    const newFavouriteList = [...favourites, movie];
+    const newList = [...currentList, cardToAdd];
 
-    setFavourites(newFavouriteList);
-    saveToLocalStorage(newFavouriteList, FAVOURITES);
+    setNewState(newList);
+    saveToLocalStorage(newList, targetList);
   };
 
   const softRemoveCard = (cardToRemove, targetList) => {
@@ -136,21 +170,6 @@ const App = () => {
     setFavourites(newFavouriteList);
   };
 
-  const isAlreadyExist = (givenCard, list) => {
-    return list.find(currentCard => currentCard.imdbID === givenCard.imdbID);
-  };
-
-  const addToWishlist = movie => {
-    if (isAlreadyExist(movie, wishlist)) {
-      return;
-    }
-
-    const newWishlist = [...wishlist, movie];
-
-    setWishlist(newWishlist);
-    saveToLocalStorage(WISHLIST, newWishlist);
-  };
-
   return (
     <div className="my-container">
       <div className="my-row">
@@ -166,8 +185,8 @@ const App = () => {
             movie={movie}
             rightIcon={WishIcon}
             leftIcon={HeartIcon}
-            onLeftClick={addFavouriteMovie}
-            onRightClick={addToWishlist}
+            onLeftClick={() => addCard(movie, FAVOURITES)}
+            onRightClick={() => addCard(movie, WISHLIST)}
           />
         ))}
       </div>
@@ -191,7 +210,7 @@ const App = () => {
               leftIcon={XIcon}
               rightIcon={WishIcon}
               onLeftClick={() => softRemoveCard(movie, FAVOURITES)}
-              onRightClick={addToWishlist}
+              onRightClick={() => addCard(movie, WISHLIST)}
             />
           )
         )}
@@ -215,7 +234,7 @@ const App = () => {
               movie={movie}
               leftIcon={XIcon}
               rightIcon={WishIcon}
-              onLeftClick={() => {}}
+              onLeftClick={() => addCard(movie, FAVOURITES)}
               onRightClick={() => softRemoveCard(movie, WISHLIST)}
             />
           )
