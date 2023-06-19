@@ -1,10 +1,10 @@
-const HeartIcon = ({ ...rest }) => {
+const HeartIcon = ({ fill = "white", ...rest }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"
-      fill="red"
+      fill={fill}
       class="bi bi-heart-fill"
       viewBox="0 0 16 16"
       {...rest}

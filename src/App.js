@@ -5,7 +5,6 @@ import "react-tabs/style/react-tabs.css";
 import "./App.css";
 
 import SearchBox from "./Components/SearchBox";
-import Card from "./Components/Card";
 import RemovedCard from "./Components/RemovedCard";
 import MovieCard from "./Components/MovieCard";
 
@@ -47,7 +46,7 @@ const App = () => {
     localStorage.setItem(list, JSON.stringify(cards));
   };
 
-  const isAlreadyExist = (givenCard, targetList) => {
+  const doesExist = (givenCard, targetList) => {
     let currentList = null;
 
     switch (targetList) {
@@ -58,7 +57,7 @@ const App = () => {
         currentList = wishlist;
         break;
       default:
-        console.log("incorrect targetList for isAlreadyExist method");
+        console.log("incorrect targetList for doesExist method");
     }
 
     return currentList.find(
@@ -66,7 +65,7 @@ const App = () => {
     );
   };
 
-  const addCard = (cardToAdd, targetList) => {
+  const toggleList = (card, targetList) => {
     let currentList = null,
       setNewState = null;
 
@@ -80,20 +79,21 @@ const App = () => {
         setNewState = setWishlist;
         break;
       default:
-        console.log("incorrect targetList for addCard method");
+        console.log("incorrect targetList for toggleList method");
     }
 
-    const existingCard = isAlreadyExist(cardToAdd, targetList);
+    const existingCard = doesExist(card, targetList);
 
     if (existingCard) {
-      if (existingCard.isSoftRemoved) undoCardSoftRemove(cardToAdd, targetList);
-      return;
+      if (existingCard.isSoftRemoved) {
+        undoCardSoftRemove(card, targetList);
+      } else completeRemoveCard(card, targetList);
+    } else {
+      const newList = [...currentList, card];
+
+      setNewState(newList);
+      saveToLocalStorage(newList, targetList);
     }
-
-    const newList = [...currentList, cardToAdd];
-
-    setNewState(newList);
-    saveToLocalStorage(newList, targetList);
   };
 
   const softRemoveCard = (cardToRemove, targetList) => {
@@ -182,7 +182,9 @@ const App = () => {
     const newList = currentList.filter(
       currentCard => currentCard.imdbID !== cardToRemove.imdbID
     );
+
     setNewState(newList);
+    saveToLocalStorage(newList, targetList);
   };
 
   return (
@@ -195,65 +197,90 @@ const App = () => {
         </TabList>
 
         <TabPanel>
-          {/* <div className="my-cards">
-            {wishlist.map(movie =>
-              movie.isSoftRemoved ? (
+          <div className="my-cards">
+            {wishlist.map(card => {
+              const existingFavouriteCard = doesExist(card, FAVOURITES);
+
+              return card.isSoftRemoved ? (
                 <RemovedCard
-                  key={movie.imdbID}
+                  key={card.imdbID}
                   width={202.25}
                   height={300}
-                  movie={movie}
-                  handleUndoClick={() => undoCardSoftRemove(movie, WISHLIST)}
+                  card={card}
+                  handleUndoClick={() => undoCardSoftRemove(card, WISHLIST)}
                   handleCloseClick={() => {
-                    completeRemoveCard(movie, WISHLIST);
+                    completeRemoveCard(card, WISHLIST);
                   }}
                 />
               ) : (
-                <Card
-                  key={movie.imdbID}
-                  movie={movie}
-                  onLeftClick={() => addCard(movie, FAVOURITES)}
-                  onRightClick={() => softRemoveCard(movie, WISHLIST)}
+                <MovieCard
+                  key={card.imdbID}
+                  card={card}
+                  onLeftClick={() => toggleList(card, FAVOURITES)}
+                  onRightClick={() => softRemoveCard(card, WISHLIST)}
+                  isFavourite={
+                    existingFavouriteCard &&
+                    !existingFavouriteCard.isSoftRemoved
+                  }
+                  isWishlisted={true}
                 />
-              )
-            )}
-          </div> */}
-        </TabPanel>
-
-        <TabPanel>
-          {/* <div className="my-cards">
-            {favourites.map(movie =>
-              movie.isSoftRemoved ? (
-                <RemovedCard
-                  key={movie.imdbID}
-                  width={202.25}
-                  height={300}
-                  movie={movie}
-                  handleUndoClick={() => undoCardSoftRemove(movie, FAVOURITES)}
-                  handleCloseClick={() => completeRemoveCard(movie, FAVOURITES)}
-                />
-              ) : (
-                <Card
-                  key={movie.imdbID}
-                  movie={movie}
-                  onLeftClick={() => softRemoveCard(movie, FAVOURITES)}
-                  onRightClick={() => addCard(movie, WISHLIST)}
-                />
-              )
-            )}
-          </div> */}
+              );
+            })}
+          </div>
         </TabPanel>
 
         <TabPanel>
           <div className="my-cards">
-            {searchedCards.map(card => (
-              <MovieCard
-                key={card.imdbID}
-                card={card}
-                onLeftClick={() => addCard(card, FAVOURITES)}
-                onRightClick={() => addCard(card, WISHLIST)}
-              />
-            ))}
+            {favourites.map(card => {
+              const existingWishlistCard = doesExist(card, WISHLIST);
+
+              return card.isSoftRemoved ? (
+                <RemovedCard
+                  key={card.imdbID}
+                  width={202.25}
+                  height={300}
+                  card={card}
+                  handleUndoClick={() => undoCardSoftRemove(card, FAVOURITES)}
+                  handleCloseClick={() => completeRemoveCard(card, FAVOURITES)}
+                />
+              ) : (
+                <MovieCard
+                  key={card.imdbID}
+                  card={card}
+                  onLeftClick={() => softRemoveCard(card, FAVOURITES)}
+                  onRightClick={() => toggleList(card, WISHLIST)}
+                  isFavourite={true}
+                  isWishlisted={
+                    existingWishlistCard && !existingWishlistCard.isSoftRemoved
+                  }
+                />
+              );
+            })}
+          </div>
+        </TabPanel>
+
+        <TabPanel>
+          <div className="my-cards">
+            {searchedCards.map(card => {
+              const existingFavouriteCard = doesExist(card, FAVOURITES);
+              const existingWishlistCard = doesExist(card, WISHLIST);
+
+              return (
+                <MovieCard
+                  key={card.imdbID}
+                  card={card}
+                  onLeftClick={() => toggleList(card, FAVOURITES)}
+                  onRightClick={() => toggleList(card, WISHLIST)}
+                  isFavourite={
+                    existingFavouriteCard &&
+                    !existingFavouriteCard.isSoftRemoved
+                  }
+                  isWishlisted={
+                    existingWishlistCard && !existingWishlistCard.isSoftRemoved
+                  }
+                />
+              );
+            })}
           </div>
         </TabPanel>
       </Tabs>

@@ -6,6 +6,8 @@ const Card = ({
   onLeftClick,
   onRightClick,
   link = "https://www.imdb.com/title",
+  isFavourite,
+  isWishlisted,
 }) => {
   return (
     <div className="my-card">
@@ -18,9 +20,13 @@ const Card = ({
       </a>
 
       <div className="my-overlay">
-        <HeartIcon onClick={onLeftClick()} />
+        <div className="my-overlay-icon" onClick={onLeftClick}>
+          <HeartIcon fill={isFavourite ? "red" : "white"} />
+        </div>
 
-        <WishIcon onClick={onRightClick()} />
+        <div className="my-overlay-icon" onClick={onRightClick}>
+          <WishIcon fill={isWishlisted ? "red" : "white"} />
+        </div>
       </div>
     </div>
   );

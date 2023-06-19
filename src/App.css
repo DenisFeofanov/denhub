@@ -55,7 +55,6 @@ html {
   position: absolute;
   bottom: 0;
   width: 100%;
-  padding: 20px;
 
   display: flex;
   justify-content: space-around;
@@ -67,6 +66,11 @@ html {
   text-align: center;
   color: white;
   font-size: 0.7rem;
+}
+
+.my-overlay-icon {
+  flex: 1;
+  padding: 15px 0 15px 0;
 }
 
 .my-card-image {
