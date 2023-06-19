@@ -1,20 +1,19 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
 import "./App.css";
 
-import HeartIcon from "./Components/HeartIcon";
-import MovieListHeading from "./Components/MovieListHeading";
 import SearchBox from "./Components/SearchBox";
 import Card from "./Components/Card";
-import XIcon from "./Components/XIcon";
 import RemovedCard from "./Components/RemovedCard";
-import WishIcon from "./Components/WishIcon";
+import MovieCard from "./Components/MovieCard";
 
 const FAVOURITES = "favourites";
 const WISHLIST = "wishlist";
 
 const App = () => {
-  const [movies, setMovies] = useState([]);
+  const [searchedCards, setSearchedCards] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [favourites, setFavourites] = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -26,7 +25,7 @@ const App = () => {
     const responseJson = await response.json();
 
     if (responseJson.Search) {
-      setMovies(responseJson.Search);
+      setSearchedCards(responseJson.Search);
     }
   };
 
@@ -188,76 +187,78 @@ const App = () => {
 
   return (
     <div className="my-container">
-      <div className="my-row">
-        <MovieListHeading heading="Movies" />
+      <Tabs className="my-tabs">
+        <TabList>
+          <Tab>Wishlist</Tab>
+          <Tab>Favourites</Tab>
+          <Tab>Search</Tab>
+        </TabList>
 
-        <SearchBox searchValue={searchValue} setSearchValue={setSearchValue} />
-      </div>
+        <TabPanel>
+          {/* <div className="my-cards">
+            {wishlist.map(movie =>
+              movie.isSoftRemoved ? (
+                <RemovedCard
+                  key={movie.imdbID}
+                  width={202.25}
+                  height={300}
+                  movie={movie}
+                  handleUndoClick={() => undoCardSoftRemove(movie, WISHLIST)}
+                  handleCloseClick={() => {
+                    completeRemoveCard(movie, WISHLIST);
+                  }}
+                />
+              ) : (
+                <Card
+                  key={movie.imdbID}
+                  movie={movie}
+                  onLeftClick={() => addCard(movie, FAVOURITES)}
+                  onRightClick={() => softRemoveCard(movie, WISHLIST)}
+                />
+              )
+            )}
+          </div> */}
+        </TabPanel>
 
-      <div className="my-cards">
-        {movies.map(movie => (
-          <Card
-            key={movie.imdbID}
-            movie={movie}
-            rightIcon={WishIcon}
-            leftIcon={HeartIcon}
-            onLeftClick={() => addCard(movie, FAVOURITES)}
-            onRightClick={() => addCard(movie, WISHLIST)}
-          />
-        ))}
-      </div>
+        <TabPanel>
+          {/* <div className="my-cards">
+            {favourites.map(movie =>
+              movie.isSoftRemoved ? (
+                <RemovedCard
+                  key={movie.imdbID}
+                  width={202.25}
+                  height={300}
+                  movie={movie}
+                  handleUndoClick={() => undoCardSoftRemove(movie, FAVOURITES)}
+                  handleCloseClick={() => completeRemoveCard(movie, FAVOURITES)}
+                />
+              ) : (
+                <Card
+                  key={movie.imdbID}
+                  movie={movie}
+                  onLeftClick={() => softRemoveCard(movie, FAVOURITES)}
+                  onRightClick={() => addCard(movie, WISHLIST)}
+                />
+              )
+            )}
+          </div> */}
+        </TabPanel>
 
-      <MovieListHeading heading="Favourites" />
-      <div className="my-cards">
-        {favourites.map(movie =>
-          movie.isSoftRemoved ? (
-            <RemovedCard
-              key={movie.imdbID}
-              width={202.25}
-              height={300}
-              movie={movie}
-              handleUndoClick={() => undoCardSoftRemove(movie, FAVOURITES)}
-              handleCloseClick={() => completeRemoveCard(movie, FAVOURITES)}
-            />
-          ) : (
-            <Card
-              key={movie.imdbID}
-              movie={movie}
-              leftIcon={XIcon}
-              rightIcon={WishIcon}
-              onLeftClick={() => softRemoveCard(movie, FAVOURITES)}
-              onRightClick={() => addCard(movie, WISHLIST)}
-            />
-          )
-        )}
-      </div>
+        <TabPanel>
+          <div className="my-cards">
+            {searchedCards.map(card => (
+              <MovieCard
+                key={card.imdbID}
+                card={card}
+                onLeftClick={() => addCard(card, FAVOURITES)}
+                onRightClick={() => addCard(card, WISHLIST)}
+              />
+            ))}
+          </div>
+        </TabPanel>
+      </Tabs>
 
-      <MovieListHeading heading="Wishlist" />
-      <div className="my-cards">
-        {wishlist.map(movie =>
-          movie.isSoftRemoved ? (
-            <RemovedCard
-              key={movie.imdbID}
-              width={202.25}
-              height={300}
-              movie={movie}
-              handleUndoClick={() => undoCardSoftRemove(movie, WISHLIST)}
-              handleCloseClick={() => {
-                completeRemoveCard(movie, WISHLIST);
-              }}
-            />
-          ) : (
-            <Card
-              key={movie.imdbID}
-              movie={movie}
-              leftIcon={XIcon}
-              rightIcon={WishIcon}
-              onLeftClick={() => addCard(movie, FAVOURITES)}
-              onRightClick={() => softRemoveCard(movie, WISHLIST)}
-            />
-          )
-        )}
-      </div>
+      <SearchBox searchValue={searchValue} setSearchValue={setSearchValue} />
     </div>
   );
 };

@@ -7,8 +7,12 @@ html {
 }
 
 .my-container {
-  padding-left: 3vw;
-  padding-bottom: 3vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 3vw;
+
+  padding: 3vw;
 }
 
 .my-row {
@@ -95,4 +99,8 @@ html {
   right: 0;
   margin: 0.35rem;
   cursor: pointer;
+}
+
+.my-tabs {
+  flex-grow: 1;
 }

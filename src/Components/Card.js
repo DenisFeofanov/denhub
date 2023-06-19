@@ -1,24 +1,26 @@
-const Card = props => {
-  const LeftIcon = props.leftIcon;
-  const RightIcon = props.rightIcon;
+import HeartIcon from "./HeartIcon";
+import WishIcon from "./WishIcon";
 
+const Card = ({
+  card,
+  onLeftClick,
+  onRightClick,
+  link = "https://www.imdb.com/title",
+}) => {
   return (
     <div className="my-card">
-      <a
-        href={`https://www.imdb.com/title/${props.movie.imdbID}`}
-        className="my-card"
-      >
+      <a href={`${link}/${card.imdbID}`} className="my-card">
         <img
           className="my-card-image"
-          src={props.movie.Poster}
-          alt="movie"
+          src={card.Poster}
+          alt="Content card"
         ></img>
       </a>
 
       <div className="my-overlay">
-        <LeftIcon onClick={() => props.onLeftClick(props.movie)} />
+        <HeartIcon onClick={onLeftClick()} />
 
-        <RightIcon onClick={() => props.onRightClick(props.movie)} />
+        <WishIcon onClick={onRightClick()} />
       </div>
     </div>
   );
